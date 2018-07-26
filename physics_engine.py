@@ -3,7 +3,6 @@ from math import sin, cos, radians, sqrt
 
 # all measurements are in base metric units, all angles are in radians
 
-# god bless!!!  this took me like 3 days to write
 class Line:
     # shape can be 'line', 'vertical', or 'circle'
     # the 2nd, 3rd, and 4th lines of the following __init__ declaration contain the instance variables exclusively for
@@ -107,8 +106,8 @@ class Line:
 
 class Rect:
     def __init__(self, pos, velocity, tilt=0., angular_v=0., height=10., width=10., mass=1., material=0, static=False, f_coeff=0.):
-        self.tilt = tilt # angle of object, in rads
-        self.angular_v = angular_v # angular velocity, in rads/sec
+        self.tilt = tilt # angle of object, in degrees
+        self.angular_v = angular_v # angular velocity, in degrees/sec
         self.height = height
         self.width = width
         self.mass = mass
@@ -126,14 +125,19 @@ class Rect:
         else:
             self.velocity = velocity
 
+        # will contain 4 Line objects for each of the 4 border lines of the rectangle, set in the update method
+        self.borders = [None for i in range(4)]
+
     def update(self, t):
         # udpate position and tilt based on linear and rotational velocities
         for i in range(2):
             self.pos[i] += self.velocity * t
         self.tilt += self.angular_v * t
+
+        # a rectangle is the same if it is rotated by 180 degrees either way any number of times
         self.tilt %= 180
 
-        # determine boundaries of rectangle by finding corners then drawing lines between the corners
+        # find the four corners of the rectangle
         x = self.pos[0]
         y = self.pos[1]
         adj_width = cos(radians(self.tilt)) * self.width / 2
@@ -141,13 +145,49 @@ class Rect:
         adj_height = cos(radians(self.tilt)) * self.height / 2
         opp_height = sin(radians(self.tilt)) * self.height / 2
 
-        tl = (x - adj_width - opp_height,
+        tl = (x - adj_width - opp_height, # top left corner when tilt equals 0
               y + opp_width - adj_height)
-        tr = (x + adj_width - opp_height,
+        tr = (x + adj_width - opp_height, # tops right corner when tilt equals 0
               y - opp_width - adj_height)
-        bl = (x - adj_width + opp_height,
+        bl = (x - adj_width + opp_height, # bottom left corner when tilt equals 0
               y + opp_width + adj_height)
-        br = (x + adj_width + opp_height,
+        br = (x + adj_width + opp_height, # bottom right corner when tilt equals 0
               y - opp_width + adj_height)
 
-            
+        # these three if statements define the lines that make up the rectangle, given the four corners
+        # if tilt is 0 or 90 degrees, then we need to worry about vertical lines, so they are special cases
+        # tilt cannot be a multiple of 90 that is not 0 or 90 because earlier in this function, we make sure that 0 <= tilt < 180
+        if self.tilt == 0:
+            self.borders = [Line(shape='line', slope=0, y_intercept=tl[1], domain=(tl[0], tr[0])),
+                            Line(shape='vertical', x_coord=tl[0], y_range=(bl[1], tl[1])),
+                            Line(shape='line', slope=0, y_intercept=bl[1], domain=(tl[0], tr[0])),
+                            Line(shape='vertical', x_coord=tr[0], y_range=(br[1], tr[1]))]
+
+        # the main difference between when tilt is 0 versus when tilt is 90 degrees is that the two lines that are vertical and
+        # the two lines that are normal swap
+        elif self.tilt == 90:
+            self.borders = [Line(shape='vertical', x_coord=tl[0], y_range=(tl[1], tr[1])),
+                            Line(shape='line', slope=0, y_intercept=tr[1], domain=(tl[0], bl[0])),
+                            Line(shape='vertical', x_coord=bl[0], y_range=(bl[1], br[1])),
+                            Line(shape='line', slope=0, y_intercept=tr[1], domain=(tr[0], br[0]))]
+
+        # with any rotation that will not give us vertical lines, we can calculate the slope of lines 0 and 2, which are parallel, and then
+        # use the perpendicular line formula (m_p = -1 / m) to find the slope of lines 1 and 3
+        # the y_intercepts are calculated by rearranging y = mx + b into b = y - mx
+        else:
+            m1 = (tl[1] - tr[1]) / (tl[0] - tr[0])
+            m2 = -1 / m1
+
+            self.borders = [Line(shape='line', slope=m1, y_intercept=tl[1] - m1 * tl[0]),
+                            Line(shape='line', slope=m2, y_intercept=tl[1] - m2 * tl[0], domain=(tl[0], bl[0])),
+                            Line(shape='line', slope=m1, y_intercept=br[1] - m1 * br[0]),
+                            Line(shape='line', slope=m2, y_intercept=br[1] - m2 * br[0], domain=(tr[0], br[0]))]
+
+            # because the domain must be declared with the least value first, lines 0 and 2, which are initially the top and bottom
+            # lines of the rectangle, must have the order of their domain reversed when the tilt is greater than 90 degrees
+            if self.tilt < 90:
+                self.borders[0].domain = (tl[0], tr[0])
+                self.borders[2].domain = (bl[0], br[0])
+            else:
+                self.borders[0].domain = (tr[0], tl[0])
+                self.borders[2].domain = (br[0], bl[0])
