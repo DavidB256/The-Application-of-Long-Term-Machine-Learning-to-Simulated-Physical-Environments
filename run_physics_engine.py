@@ -1,33 +1,42 @@
 import physics_engine as pe
+from time import time
 
-length = 2 # duration for which the simulation will run, in seconds
-tick = .1 # length of one tick, in seconds
+start_time = time()
 
-solids = {'rects': [pe.Rect(velocity=(1, 0))],
-          'circles': []}
+length = 10 # duration for which the simulation will run, in seconds
+tick_length = .1 # length of one tick, in seconds
+
+# create objects from the classes in physics_engine.py and put them into lists
+rects = []
+circles = [pe.Circle(pos=[250, 250])]
 
 f = open('output.txt', 'w')
 
-for i in range(int(length / tick)):
-    for rect in solids['rects']:
-        f.write(str(i) + '?' +
-                'rect?' +
-                str(rect.pos) + '?' +
-                str(rect.tilt) + '?' +
-                str(rect.material) + '?' + # different materials will correspond to different colors
-                str(rect.height) + '?' +
-                str(rect.width) + '\n')
+# write output from physics engine into output.txt, use question marks as separators between instance variables
+for tick in range(int(length / tick_length)):
+    for rect in rects:
+        f.write(str(tick) + '?' +
+                'shape' + 'Rect?' +
+                'pos' + str(rect.pos) + '?' +
+                'velocity' + str(rect.velocity) + '?' +
+                'mass' + str(rect.mass) + '?' +
+                'f_coeff' + str(rect.f_coeff) + '?' +
+                'width' + str(rect.width) + '?' +
+                'height' + str(rect.height) + '?' +
+                'static' + str(rect.static) + '?\n')
 
-        rect.update_pos(tick)
-        rect.get_rect_borders()
+        rect.update(tick_length)
 
-    for circle in solids['circles']:
-        f.write(str(i) + '?' +
-                'circle?' +
-                str(circle.pos) + '?' +
-                str(circle.tilt) + '?' + # down the line, I may want to implement a way to show the tilt of a circle in the graphics engine
-                str(circle.material) + '?' +
-                str(circle.radius) + '\n')
+    for circle in circles:
+        f.write(str(tick) + '?' +
+                'shape' + 'Circle?' +
+                'pos' + str(circle.pos) + '?' +
+                'velocity' + str(circle.velocity) + '?' +
+                'mass' + str(circle.mass) + '?' +
+                'f_coeff' + str(circle.f_coeff) + '?' +
+                'radius' + str(circle.radius) + '?' +
+                'static' + str(circle.static) + '?\n')
 
-        circle.update_pos(tick)
-        circle.get_circle_borders()
+        circle.update(tick_length)
+
+print('time elapsed', time() - start_time)
