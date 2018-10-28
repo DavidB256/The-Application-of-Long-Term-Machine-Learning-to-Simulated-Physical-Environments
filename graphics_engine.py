@@ -39,9 +39,9 @@ while True:
             qm_locs.append(i)
 
     # clear screen if new tick, erasing shapes from previous tick
-    if int(line[:qm_locs[0]]) != tick:
+    if line[:qm_locs[0]] != tick:
         game_display.fill(white)
-        tick = int(line[0])
+        tick = line[:qm_locs[0]]
 
     # put all instance variables of the onject described in the line into variables dictionary
     variables = {}
@@ -61,7 +61,7 @@ while True:
     for i, char in enumerate(variables['pos']):
         if char == ',':
             x = int(float(variables['pos'][1:i]))
-            y = int(float(variables['pos'][i + 1:-2]))
+            y = int(float(variables['pos'][i + 1:-1]))
 
     # draw the shape
     if variables['shape'] == 'Rect':
@@ -73,10 +73,10 @@ while True:
         pg.draw.circle(game_display, black, (x + int(disp_width / 2), -y + int(disp_height / 2)), r)
 
     # print tick number on screen
-    game_display.blit(pg.font.SysFont('Arial', 12).render(str(tick) + 's', 0, black), (0, 0))
+    game_display.blit(pg.font.SysFont('Arial', 12).render(str(tick), 0, black), (0, 0))
 
     # pause between each frame
     sleep(.01)
-    # input()
 
-pg.quit() # shutdown for when main while loop is exited after all of output.txt is read
+# shutdown for when main while loop is exited after all of output.txt is read
+pg.quit()
