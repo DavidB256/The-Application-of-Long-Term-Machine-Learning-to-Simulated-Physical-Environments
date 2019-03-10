@@ -10,7 +10,18 @@ class Environment:
         self.g_type = g_type
         self.g_strength = g_strength
 
-# inelastic test
+# test side-view golf without friction, just bounce
+e7 = Environment(solids=[pe.Circle(pos=[-100, -100], velocity=[10, 5]),
+                         pe.Rect(pos=[0, -10], width=200, static=True)],
+                 g_type='uniform',
+                 g_strength=15)
+
+# gravity assist test
+e6 = Environment(solids=[pe.Circle(pos=[-100, 0], static=True, mass=100),
+                         pe.Circle(pos=[0, 0], velocity=[3, 0], mass=1, radius=1),
+                         pe.Circle(pos=[50, 0], velocity=[0, 1.5], mass=20)],
+                 g_type='nonuniform',
+                 g_strength=10)
 
 # worst moon ever
 e5 = Environment(solids=[pe.Circle(static=True, mass=1000),

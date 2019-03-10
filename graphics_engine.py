@@ -2,7 +2,7 @@ import pygame as pg
 from time import sleep
 from string import digits, ascii_uppercase
 
-def display_graphics(save_loc, sleep_time):
+def display_graphics(save_loc, capture, sleep_time):
     # housekeeping
     white = (255, 255, 255)
     black = (0, 0, 0)
@@ -33,8 +33,8 @@ def display_graphics(save_loc, sleep_time):
         # if new tick: update the display, take a screenshot, clear the display, and update the tick
         if line[:qm_locs[0]] != tick:
             pg.display.update()
-            # enable this to store a picture of every frame, slows everything down considerably
-            # pg.image.save(game_display, save_loc + tick + '.png')
+            if capture:
+                pg.image.save(game_display, save_loc + tick + '.png')
 
             game_display.fill(white)
             tick = line[:qm_locs[0]]
@@ -79,5 +79,7 @@ def display_graphics(save_loc, sleep_time):
 
     # shutdown for when main while loop is exited after all of output.txt is read
     pg.display.update()
-    pg.image.save(game_display, save_loc + tick + '.png')
+    if capture:
+        pg.image.save(game_display, save_loc + tick + '.png')
+
     pg.quit()

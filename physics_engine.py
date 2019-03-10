@@ -29,7 +29,7 @@ def reflect(p1, p2, velocity):
 
     return [addend_x, addend_y]
 
-# fix velocities of colliding objects when one is static, so energy/momentum are not transferred
+# fix velocities of colliding objects when one is static, so energy/momentum are not transferred, aka "the other function"
 def resolve_static_collision(solid_d, solid_s, intersection_type):
     if intersection_type == 'cc':
         addend = reflect(solid_d.pos, solid_s.pos, solid_d.velocity)
@@ -82,7 +82,7 @@ def resolve_static_collision(solid_d, solid_s, intersection_type):
         solid_d.velocity[0] += addend[0]
         solid_d.velocity[1] += addend[1]
 
-# fix velocities of colliding objects, aka "the other function"
+# fix velocities of colliding objects
 def resolve_collision(solid1, solid2, intersection_type):
     # dealing with statics
     if solid1.static:
@@ -91,12 +91,14 @@ def resolve_collision(solid1, solid2, intersection_type):
             return
         # if solid1 is static while solid2 is dynamic, refer to the other function, swapping the order of the intersection_type
         resolve_static_collision(solid2, solid1, intersection_type[1] + intersection_type[0])
+        return
     # if solid2 is static while solid1 is dynamic, refer to the other function
     elif solid2.static:
         resolve_static_collision(solid1, solid2, intersection_type)
 
     # for if two circles are colliding
     if intersection_type == 'cc':
+        # this is a lot of linear algebra that I do not understand, but copied from a paper I found
         x_diff = solid1.pos[0] - solid2.pos[0]
         y_diff = solid1.pos[1] - solid2.pos[1]
         dist = distance([x_diff, y_diff], [0, 0])
@@ -109,6 +111,23 @@ def resolve_collision(solid1, solid2, intersection_type):
         tan_vel_1 = dp(tan_v, solid1.velocity)
         norm_vel_2 = dp(norm_dist_v, solid2.velocity)
         tan_vel_2 = dp(tan_v, solid2.velocity)
+
+        # extra parentheses? one can never use too much protection!!
+        norm_vel_1_new = ((norm_vel_1 * (solid1.mass - solid2.mass)) + (2 * solid2.mass * norm_vel_2)) / (solid1.mass + solid2.mass)
+        norm_vel_2_new = ((norm_vel_2 * (solid2.mass - solid1.mass)) + (2 * solid1.mass * norm_vel_1)) / (solid1.mass + solid2.mass)
+
+        norm_vel_1_v_new = [norm_dist_v[0] * norm_vel_1_new, norm_dist_v[1] * norm_vel_1_new]
+        tan_vel_1_v_new = [tan_v[0] * tan_vel_1, tan_v[1] * tan_vel_1]
+        norm_vel_2_v_new = [norm_dist_v[0] * norm_vel_2_new, norm_dist_v[1] * norm_vel_2_new]
+        tan_vel_2_v_new = [tan_v[0] * tan_vel_2, tan_v[1] * tan_vel_2]
+
+        for i in range(2):
+            solid1.velocity[i] = norm_vel_1_v_new[i] + tan_vel_1_v_new[i]
+            solid2.velocity[i] = norm_vel_2_v_new[i] + tan_vel_2_v_new[i]
+
+    # I originally intended to code for all possible dynamic-dynamic collisions, but have found that I only need to code for circle-circle
+    # for my purposes, so this function only does anything if the two solids in question are circles.  If one of them is static, which is
+    # true in many of my cases, the collision resolution will always be appropriate and successful.
 
 # parent class for Rect and Circle
 class Solid:
@@ -208,7 +227,9 @@ class Rect(Solid):
                 'shape' + 'Rect?' +
                 'pos' + str(self.pos) + '?' +
                 'velocity' + str(self.velocity) + '?' +
+                'mass' + str(self.mass) + '?' +
                 'bounce' + str(self.bounce) + '?' +
+                'static' + str(self.static) + '?' +
                 'width' + str(self.width) + '?' +
                 'height' + str(self.height) + '?\n')
 
@@ -263,11 +284,14 @@ class Circle(Solid):
 
     # writes instance variables of object into output file
     def write(self, f, tick):
+        # pos=None, velocity=None, mass=10., bounce=1., static=False, radius=10.
         f.write(str(tick) + '?' +
                 'shape' + 'Circle?' +
                 'pos' + str(self.pos) + '?' +
                 'velocity' + str(self.velocity) + '?' +
+                'mass' + str(self.mass) + '?' +
                 'bounce' + str(self.bounce) + '?' +
+                'static' + str(self.static) + '?' +
                 'radius' + str(self.radius) + '?\n')
 
 # class to store boundaries of rectangles
