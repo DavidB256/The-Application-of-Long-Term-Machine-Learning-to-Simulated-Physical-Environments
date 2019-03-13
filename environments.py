@@ -10,11 +10,14 @@ class Environment:
         self.g_type = g_type
         self.g_strength = g_strength
 
+# PS_1: find escape velocity
+e8 = 1
+
 # test side-view golf without friction, just bounce
-e7 = Environment(solids=[pe.Circle(pos=[-100, -100], velocity=[10, 5]),
-                         pe.Rect(pos=[0, -10], width=200, static=True)],
+e7 = Environment(solids=[pe.Circle(pos=[-100, 100], velocity=[10, 5]),
+                         pe.Rect(pos=[0, -15], height=20, width=600, static=True, bounce=.7)],
                  g_type='uniform',
-                 g_strength=15)
+                 g_strength=[0, -15])
 
 # gravity assist test
 e6 = Environment(solids=[pe.Circle(pos=[-100, 0], static=True, mass=100),

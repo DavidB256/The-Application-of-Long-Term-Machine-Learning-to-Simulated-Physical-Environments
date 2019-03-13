@@ -279,6 +279,7 @@ class Circle(Solid):
 
         elif other.__class__.__name__ == 'Circle':
             if distance(self.pos, other.pos) <= self.radius + other.radius:
+                print(2)
                 return 'cc'
             return 'nc'
 
@@ -301,3 +302,67 @@ class Boundaries:
         self.r = pos[0] + (width / 2)
         self.b = pos[1] - (height / 2)
         self.t = pos[1] + (height / 2)
+
+def run_physics_engine(tick_length, environ, termination_func, time_limit):
+    runtime = 0
+
+    # iterate through time, one tick at a time
+    while (not termination_func) and runtime < time_limit:
+        runtime += tick_length
+
+        for solid in environ.solids:
+            # update velocities of non-static solids based on uniform gravity
+            if environ.g_type == 'uniform':
+                if not solid.static:
+                    for i in range(2):
+                        solid.velocity[i] += environ.g_strength[i] * tick_length
+
+            # update velocities of non-static solids based on nonuniform gravity
+            elif environ.g_type == 'nonuniform':
+                if not solid.static:
+                    for other in environ.solids:
+                        # don't let it apply gravity upon itself
+                        if solid.pos == other.pos:
+                            continue
+
+                        # normalize velocity vector
+                        x_diff = other.pos[0] - solid.pos[0]
+                        y_diff = other.pos[1] - solid.pos[1]
+                        dist = distance(solid.pos, other.pos)
+                        norm_dist_v = [x_diff / dist, y_diff / dist]
+                        # formula for acceleration derived from Newton's formula for universal gravitation
+                        g = (environ.g_strength * other.mass) / (
+                        (solid.pos[0] - other.pos[0]) ** 2 + (solid.pos[1] - other.pos[1]) ** 2)
+
+                        # use normalized vector, acceleration, and tick length to adjust velocity in either direction
+                        for i in range(2):
+                            solid.velocity[i] += norm_dist_v[i] * g * tick_length
+
+            # downward gravity for top-down environments in which moving objects have friction with the background, which in this case is the floor
+            elif environ.g_type == 'downward':
+                if not solid.static:
+                    for i in range(2):
+                        solid.velocity[i] *= environ.g_strength * solid.mass
+
+            # update info of each solid
+            solid.update(tick_length)
+
+            # detect and resolve collisions
+            for i, solid1 in enumerate(environ.solids[:-1]):
+                for solid2 in environ.solids[i + 1:]:
+                    ct = solid1.collision_type(solid2)
+                    # nc means "not colliding"
+                    if ct != 'nc':
+                        # resolve the collision
+                        resolve_collision(solid1, solid2, ct)
+
+                        # have a solid bounce back away from its collider to prevent one object just sinking into another
+                        solid1.update(tick_length)
+                        solid2.update(tick_length)
+
+                        # account for loss of kinetic energy due to collision: v^2' = v^2 * bounce --> v' = v * sqrt(bounce)
+                        for j in range(2):
+                            solid1.velocity[j] *= solid2.bounce ** .5
+                            solid2.velocity[j] *= solid1.bounce ** .5
+    print(runtime)
+    return runtime
