@@ -279,7 +279,6 @@ class Circle(Solid):
 
         elif other.__class__.__name__ == 'Circle':
             if distance(self.pos, other.pos) <= self.radius + other.radius:
-                print(2)
                 return 'cc'
             return 'nc'
 
@@ -303,11 +302,21 @@ class Boundaries:
         self.b = pos[1] - (height / 2)
         self.t = pos[1] + (height / 2)
 
-def run_physics_engine(tick_length, environ, termination_func, time_limit):
+
+def termination(environ, tick_length):
+    next_pos = [0, environ.solids[1].pos[1] + (environ.solids[1].velocity[1] * tick_length)]
+    if distance([0, 0], next_pos) <= 11:
+        return True
+    return False
+
+def run_physics_engine(tick_length, environ, time_limit):
     runtime = 0
 
     # iterate through time, one tick at a time
-    while (not termination_func) and runtime < time_limit:
+    while runtime <= time_limit:
+        if termination(environ, tick_length):
+            break
+
         runtime += tick_length
 
         for solid in environ.solids:
@@ -331,8 +340,7 @@ def run_physics_engine(tick_length, environ, termination_func, time_limit):
                         dist = distance(solid.pos, other.pos)
                         norm_dist_v = [x_diff / dist, y_diff / dist]
                         # formula for acceleration derived from Newton's formula for universal gravitation
-                        g = (environ.g_strength * other.mass) / (
-                        (solid.pos[0] - other.pos[0]) ** 2 + (solid.pos[1] - other.pos[1]) ** 2)
+                        g = (environ.g_strength * other.mass) / ((solid.pos[0] - other.pos[0]) ** 2 + (solid.pos[1] - other.pos[1]) ** 2)
 
                         # use normalized vector, acceleration, and tick length to adjust velocity in either direction
                         for i in range(2):
@@ -350,7 +358,7 @@ def run_physics_engine(tick_length, environ, termination_func, time_limit):
             # detect and resolve collisions
             for i, solid1 in enumerate(environ.solids[:-1]):
                 for solid2 in environ.solids[i + 1:]:
-                    ct = solid1.collision_type(solid2)
+                    ct = solid1.collision_type(solid2) # ct stands for collision type
                     # nc means "not colliding"
                     if ct != 'nc':
                         # resolve the collision
@@ -364,5 +372,7 @@ def run_physics_engine(tick_length, environ, termination_func, time_limit):
                         for j in range(2):
                             solid1.velocity[j] *= solid2.bounce ** .5
                             solid2.velocity[j] *= solid1.bounce ** .5
-    print(runtime)
+
     return runtime
+
+

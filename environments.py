@@ -10,8 +10,11 @@ class Environment:
         self.g_type = g_type
         self.g_strength = g_strength
 
-# PS_1: find escape velocity
-e8 = 1
+# PS_1(find escape velocity): GA
+e8 = Environment(solids=[pe.Circle(static=True),
+                         pe.Circle(radius=1, pos=[0, 11.001], velocity=[0, 3.7890526644854963])],
+                 g_type='nonuniform',
+                 g_strength=10)
 
 # test side-view golf without friction, just bounce
 e7 = Environment(solids=[pe.Circle(pos=[-100, 100], velocity=[10, 5]),
