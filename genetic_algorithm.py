@@ -11,12 +11,17 @@ class Organism:
 
     # chooses to mutate an organism based on mutate_chance, then adds to each gene a randomly chosen value from a normal distribution whose standard deviation
     # equals the corresponding value in the list of one standard deviation for each gene, standard_deviations
-    def mutate(self, mutate_chance, standard_deviations):
-        if random() >= mutate_chance:
-            return
+    # if a rarer full mutation occurs, a genotype is replaced with a new, completely random one
+    def mutate(self, mutate_chance, full_mutate_chance, standard_deviations, gene_ranges):
+        rand = random()
 
-        for i in range(len(self.dna)):
-            self.dna[i] += np.random.normal() * standard_deviations[i]
+        if rand < full_mutate_chance:
+            for i, gene_range in enumerate(gene_ranges):
+                self.dna[i] = randrange(gene_range[0], gene_range[1])
+
+        elif rand < mutate_chance:
+            for i in range(len(self.dna)):
+                self.dna[i] += np.random.normal() * standard_deviations[i]
 
 
 # contains list of genotypes as instance variable organisms and methods relating to the population

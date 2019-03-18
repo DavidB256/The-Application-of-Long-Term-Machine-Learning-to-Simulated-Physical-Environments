@@ -302,13 +302,16 @@ class Boundaries:
         self.b = pos[1] - (height / 2)
         self.t = pos[1] + (height / 2)
 
-
+# returns True if the end condition of the simulation has been reached, ending run_physics_engine()
+# needs to be replaced for each new algorithm used
 def termination(environ, tick_length):
-    next_pos = [0, environ.solids[1].pos[1] + (environ.solids[1].velocity[1] * tick_length)]
+    next_pos = [environ.solids[1].pos[0] + (environ.solids[1].velocity[0] * tick_length), environ.solids[1].pos[1] + (environ.solids[1].velocity[1] * tick_length)]
+
     if distance([0, 0], next_pos) <= 11:
         return True
     return False
 
+# used for running the physics engine from another file, like one for an AI algorithm, this code is almost identical to that of run_physics_engine_indep.py
 def run_physics_engine(tick_length, environ, time_limit):
     runtime = 0
 
@@ -374,5 +377,3 @@ def run_physics_engine(tick_length, environ, time_limit):
                             solid2.velocity[j] *= solid1.bounce ** .5
 
     return runtime
-
-
