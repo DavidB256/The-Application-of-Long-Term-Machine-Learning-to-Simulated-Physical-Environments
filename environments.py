@@ -10,9 +10,15 @@ class Environment:
         self.g_type = g_type
         self.g_strength = g_strength
 
-# GA_PS_1(find escape velocity)
+# GA_PS_2(find escape velocity using generic functions in gene_functions.Gaps2), dna=[-4.640204305439812, 2.1222503763864227, 0.4471409776548261]
+e10 = Environment(solids=[pe.Circle(static=True),
+                         pe.Circle(radius=1, pos=[11.001, 0], velocity=[0.0, 3.0670082807399623])],
+                 g_type='nonuniform',
+                 g_strength=10)
+
+# GA_PS_2(find escape velocity using generic functions in gene_functions.Gaps2), dna=[-4.640204305439812, 2.1222503763864227, 0.4471409776548261]
 e9 = Environment(solids=[pe.Circle(static=True),
-                         pe.Circle(radius=1, pos=[0, 11.001], velocity=[1.8803971814935971, 74.22871855340509])],
+                         pe.Circle(radius=1, pos=[0, 11.001], velocity=[0.0, 3.0670082807399623])],
                  g_type='nonuniform',
                  g_strength=10)
 

@@ -1,7 +1,7 @@
 import physics_engine as pe
 import environments
 
-start_pos = [0, 11.001]
+start_pos = [11.001, 0]
 x = start_pos[0]
 y = start_pos[1]
 
@@ -14,14 +14,15 @@ def input4():
     return [0, y ** 2]
 
 vvvv = [0, 0]
-dna = [4.825566117052131, 1.747478546895659, -0.4155162122089578]
+dna = [-4.640204305439812, 2.1222503763864227, 0.4471409776548261]
 
 for i in range(2):
     vvvv[i] = input0()[i] * dna[0] + \
               input3()[i] * dna[1] + \
               input4()[i] * dna[2]
 
-print('vvvv', vvvv)
+print('velocity, runtime, fitness')
+print(vvvv)
 
 e = environments.Environment(solids=[pe.Circle(static=True),
                         pe.Circle(radius=1, pos=start_pos, velocity=vvvv)],

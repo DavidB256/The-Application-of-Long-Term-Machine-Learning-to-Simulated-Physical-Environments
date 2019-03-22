@@ -11,10 +11,6 @@ class Gaps2:
 
     def input0(self):
         return [self.x, self.y]
-    # def input1(self):
-    #     return [0, distance([self.x, self.y], [0, 0])]
-    # def input2(self):
-    #     return [distance([self.x, self.y], [0, 0]), 0]
     def input3(self):
         return [self.x ** 2, 0]
     def input4(self):

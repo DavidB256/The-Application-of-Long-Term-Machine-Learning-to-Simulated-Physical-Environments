@@ -1,4 +1,4 @@
-from random import random, randrange
+import random as r
 import numpy as np
 
 
@@ -13,11 +13,11 @@ class Organism:
     # equals the corresponding value in the list of one standard deviation for each gene, standard_deviations
     # if a rarer full mutation occurs, a genotype is replaced with a new, completely random one
     def mutate(self, mutate_chance, full_mutate_chance, standard_deviations, gene_ranges):
-        rand = random()
+        rand = r.random()
 
         if rand < full_mutate_chance:
             for i, gene_range in enumerate(gene_ranges):
-                self.dna[i] = randrange(gene_range[0], gene_range[1])
+                self.dna[i] = r.randrange(gene_range[0], gene_range[1])
 
         elif rand < mutate_chance:
             for i in range(len(self.dna)):
@@ -46,7 +46,7 @@ class Population:
         fitnesses.sort()
 
         # random values between 0 and 1 are generated to designate survivors
-        survivors = [random() for i in range(self.half)]
+        survivors = [r.random() for i in range(self.half)]
         survivors.sort()
 
         # if a value in the survivors list falls within the range [sum of fitnesses of all previous organisms, sum of all previous organisms and current organism),
@@ -69,7 +69,7 @@ class Population:
         new_dna = []
 
         for i in range(len(dna1)):
-            if random() < .5:
+            if r.random() < .5:
                 new_dna.append(dna1[i])
             else:
                 new_dna.append(dna2[i])
@@ -80,14 +80,14 @@ class Population:
     def reproduce(self, method):
         # refill population by breeding 50 sets of parents, chosen randomly but with their odds of being chosen proportional to their fitness
         if method == 'weighted breeding':
-            for i in range(self.half):
-                pass
+            # not yet coded, idk if I ever will
+            pass
 
         # refill population by breeding 50 sets of parents, chosen randomly
         elif method == 'unweighted breeding':
             for i in range(self.half):
-                parent1 = self.organisms[randrange(self.half)]
-                parent2 = self.organisms[randrange(self.half)]
+                parent1 = self.organisms[r.randrange(self.half)]
+                parent2 = self.organisms[r.randrange(self.half)]
 
                 self.organisms.append(Organism(self.crossing_over(parent1.dna, parent2.dna)))
 

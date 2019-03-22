@@ -10,8 +10,8 @@ def display_graphics(save_loc, capture, sleep_time):
     tick = '0'
 
     # setup for display
-    disp_width = 500
-    disp_height = 500
+    disp_width = 400
+    disp_height = 400
     pg.init()
     pg.display.set_caption('physics_engine')
     game_display = pg.display.set_mode((disp_width, disp_height))
