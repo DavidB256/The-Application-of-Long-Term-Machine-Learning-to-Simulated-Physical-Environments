@@ -15,10 +15,12 @@ class Organism:
     def mutate(self, mutate_chance, full_mutate_chance, standard_deviations, gene_ranges):
         rand = r.random()
 
+        # a full mutation assigns a completely new genotype to an organism
         if rand < full_mutate_chance:
             for i, gene_range in enumerate(gene_ranges):
-                self.dna[i] = r.randrange(gene_range[0], gene_range[1])
+                self.dna[i] = np.random.uniform(gene_range[0], gene_range[1])
 
+        # a standard mutation tweaks randomly
         elif rand < mutate_chance:
             for i in range(len(self.dna)):
                 self.dna[i] += np.random.normal() * standard_deviations[i]
