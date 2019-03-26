@@ -305,9 +305,7 @@ class Boundaries:
 # returns True if the end condition of the simulation has been reached, ending run_physics_engine()
 # needs to be replaced for each new algorithm used
 def termination(environ, tick_length):
-    next_pos = [environ.solids[1].pos[0] + (environ.solids[1].velocity[0] * tick_length), environ.solids[1].pos[1] + (environ.solids[1].velocity[1] * tick_length)]
-
-    if distance([0, 0], next_pos) <= 11:
+    if distance([0, 0], environ.solids[0].velocity) <= .01:
         return True
     return False
 
@@ -349,11 +347,20 @@ def run_physics_engine(tick_length, environ, time_limit):
                         for i in range(2):
                             solid.velocity[i] += norm_dist_v[i] * g * tick_length
 
-            # downward gravity for top-down environments in which moving objects have friction with the background, which in this case is the floor
+            # downward gravity for top-down environments in which moving objects have friction with the background, which is actually the floor
             elif environ.g_type == 'downward':
                 if not solid.static:
-                    for i in range(2):
-                        solid.velocity[i] *= environ.g_strength * solid.mass
+                    lost_v = environ.g_strength * solid.mass * tick_length
+
+                    vel_mag = distance([0, 0], solid.velocity)
+
+                    # makes sure that nothing starts accelerating backwards due to slowing down
+                    if vel_mag < lost_v:
+                        solid.velocity = [0, 0]
+                    else:
+                        factor = (vel_mag - lost_v) / vel_mag # subtract lost velocity from velocity vecotr but translate it back into composite parts
+                        for i in range(2):
+                            solid.velocity[i] *= factor
 
             # update info of each solid
             solid.update(tick_length)
@@ -376,4 +383,6 @@ def run_physics_engine(tick_length, environ, time_limit):
                             solid1.velocity[j] *= solid2.bounce ** .5
                             solid2.velocity[j] *= solid1.bounce ** .5
 
-    return runtime
+    # change return statement based on what is needed for the current algorithm's fitness function
+    # return runtime
+    return environ.solids[0].pos

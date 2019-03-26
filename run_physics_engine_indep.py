@@ -1,6 +1,7 @@
 from time import time
 from environments import *
 from graphics_engine import *
+import physics_engine as pe
 
 start_time = time()
 f = open('output.txt', 'w') # choose doc to write into
@@ -8,7 +9,7 @@ f = open('output.txt', 'w') # choose doc to write into
 # physics settings
 length = 100 # duration for which the simulation will run, in seconds
 tick_length = .2 # length of one tick, in seconds
-e = e9 # choose saved environment
+e = e10 # choose saved environment
 
 # config settings
 display = True # make true to run graphics engine immediately after
@@ -48,8 +49,18 @@ for tick in range(int(length / tick_length)):
         # downward gravity for top-down environments in which moving objects have friction with the background, which in this case is the floor
         elif e.g_type == 'downward':
             if not solid.static:
-                for i in range(2):
-                    solid.velocity[i] *= e.g_strength * solid.mass
+                lost_v = e.g_strength * solid.mass * tick_length
+
+                vel_mag = pe.distance([0, 0], solid.velocity)
+
+                # makes sure that nothing starts accelerating backwards due to slowing down
+                if vel_mag < lost_v:
+                    solid.velocity = [0, 0]
+                else:
+                    factor = (
+                             vel_mag - lost_v) / vel_mag  # subtract lost velocity from velocity vecotr but translate it back into composite parts
+                    for i in range(2):
+                        solid.velocity[i] *= factor
 
         # write info of and update each solid
         solid.write(f, tick)

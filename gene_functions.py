@@ -1,9 +1,4 @@
-from math import sqrt
-
-# returns distance between two points, finds the magnitude of a vector when the other parameter is [0, 0]
-def distance(p1, p2):
-    return sqrt((p1[0] - p2[0]) ** 2 + (p1[1] - p2[1]) ** 2)
-
+# gene functions for GA_PS_2, uses starting position of rocket
 class Gaps2:
     def __init__(self, x, y):
         self.x = x
@@ -16,6 +11,7 @@ class Gaps2:
     def input4(self):
         return [0, self.y ** 2]
 
+# gene functions for GA_PS_3, uses starting position of rocket
 class Gaps3:
     def __init__(self, x, y):
         self.x = x
@@ -31,3 +27,13 @@ class Gaps3:
         return [self.x ** 2, 0]
     def input4(self):
         return [0, self.y ** 2]
+
+# gene functions for GA_TD_1
+class Gatd1:
+    def __init__(self):
+        pass
+
+    def input0(self):
+        return [10, 0]
+    def input1(self):
+        return [0, 10]
