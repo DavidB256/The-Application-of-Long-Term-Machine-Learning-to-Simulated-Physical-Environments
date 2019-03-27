@@ -19,14 +19,10 @@ class Gaps3:
 
     def input0(self):
         return [self.x, self.y]
-    def input1(self):
-        return [1 / self.x, 0]
-    def input2(self):
-        return [0, 1 / self.y]
-    def input3(self):
-        return [self.x ** 2, 0]
-    def input4(self):
-        return [0, self.y ** 2]
+    # def input1(self):
+    #     return [self.x ** 2, 0]
+    # def input4(self):
+    #     return [0, self.y ** 2]
 
 # gene functions for GA_TD_1
 class Gatd1:

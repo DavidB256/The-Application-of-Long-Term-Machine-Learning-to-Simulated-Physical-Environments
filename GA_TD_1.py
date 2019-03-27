@@ -5,9 +5,12 @@ from environments import Environment
 import numpy as np
 from genetic_algorithm import *
 
-def get_fitness(dna):
+def get_fitness(dna, yerp=False):
     # create unique object of gene function class for each iteration
     g = gene_functions.Gatd1()
+
+    # make sure to reset pos before starting again!!!!!!!!!!
+    e.solids[0].pos = [-100, -100]
 
     # set velocity based on input functions and weights from DNA
     for i in range(2):
@@ -15,16 +18,17 @@ def get_fitness(dna):
                                   g.input1()[i] * dna[1]
 
     end_pos = pe.run_physics_engine(tick_length, e, time_limit)
-    return 1 / (pe.distance([0, 0], end_pos) ** .5)
+
+    return 1 / pe.distance([0, 0], end_pos)
 
 start_time = time()  # just a timer
 
-gen_count = 100 # for how many generations training will last
-mutate_chance = .8 # the odds of an organism being mutated on any given generation
-full_mutate_chance = .4 # odds of an organism being replaced by a randomized organism instead of just being tweaked according to the normal distribution
-standard_deviations = [.05 for i in range(2)] # how much each gene is mutated by, follows normal distribution so
+gen_count = 500 # for how many generations training will last
+mutate_chance = .5 # the odds of an organism being mutated on any given generation
+full_mutate_chance = .3 # odds of an organism being replaced by a randomized organism instead of just being tweaked according to the normal distribution
+standard_deviations = [.1 for i in range(2)] # how much each gene is mutated by, follows normal distribution so
 gene_ranges = [(-3, 3) for i in range(2)]
-pop_size = 20 # number of organisms in the population
+pop_size = 10 # number of organisms in the population
 
 time_limit = 10 ** 10 # how long each fitness test will run for before just giving up
 tick_length = .2 # how often the physics engine will update, smaller values create more precise simulations but take longer
@@ -69,7 +73,7 @@ for generation in range(gen_count):
 
 # print results at end
 for org in p.organisms:
-    org.fitness = get_fitness(org.dna)
+    org.fitness = get_fitness(org.dna, True)
     print(org.fitness, org.dna)
 
 print('time elapsed:', time() - start_time)

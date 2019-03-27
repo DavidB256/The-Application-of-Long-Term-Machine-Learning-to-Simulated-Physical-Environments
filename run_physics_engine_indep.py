@@ -7,7 +7,7 @@ start_time = time()
 f = open('output.txt', 'w') # choose doc to write into
 
 # physics settings
-length = 100 # duration for which the simulation will run, in seconds
+length = 20 # duration for which the simulation will run, in seconds
 tick_length = .2 # length of one tick, in seconds
 e = e10 # choose saved environment
 

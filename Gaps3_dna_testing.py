@@ -2,7 +2,7 @@ import physics_engine as pe
 import environments
 import gene_functions
 
-start_pos = [[-11.001, 1], [1, -11.001], [11.001, 1], [1, 11.001], [7.1, 7.1], [-7.1, 7.1], [-7.1, -7.1], [7.1, -7.1]]
+start_pos = [[-11.001, .1], [.1, -11.001], [11.001, .1], [.1, 11.001], [7.8, 7.8], [-7.8, 7.8], [-7.8, -7.8], [7.8, -7.8]]
 
 for i in start_pos:
     print('pos', i)
@@ -13,14 +13,13 @@ for i in start_pos:
     g = gene_functions.Gaps3(x, y)
 
     velocity = [0, 0]
-    dna = [-2.1693324115334147, 2.970598072220141, 2.607791095856965, 1.5847747047886989, 0.4836883044962237]
+    dna = [0.29087740586878064]
 
     for j in range(2):
-        velocity[j] = g.input0()[j] * dna[0] + \
-                      g.input1()[j] * dna[1] + \
-                      g.input2()[j] * dna[2] + \
-                      g.input3()[j] * dna[3] + \
-                      g.input4()[j] * dna[4]
+        velocity[j] = g.input0()[j] * dna[0]
+                      # g.input1()[j] * dna[1] + \
+                      # g.input4()[j] * dna[2]
+    print(velocity)
 
             # print('velocity', velocity)
 

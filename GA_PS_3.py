@@ -26,14 +26,9 @@ def get_fitness(start_x, dna):
 
     # set velocity based on input functions and weights from DNA
     for i in range(2):
-        e.solids[1].velocity[i] = g.input0()[i] * dna[0] + \
-                                  g.input1()[i] * dna[1] + \
-                                  g.input2()[i] * dna[2] + \
-                                  g.input3()[i] * dna[3] + \
-                                  g.input4()[i] * dna[4]
-
-    # save initial velocity for use in fitness function
-    initial_velocity = e.solids[1].velocity
+        e.solids[1].velocity[i] = g.input0()[i] * dna[0]
+                                  # g.input1()[i] * dna[1] + \
+                                  # g.input4()[i] * dna[2]
 
     # run the physics engine until either the termination condition is reached (termination function has to be put into the physics_engine.py
     runtime = pe.run_physics_engine(tick_length, e, time_limit)
@@ -42,24 +37,18 @@ def get_fitness(start_x, dna):
     if runtime >= time_limit or runtime <= tick_length * 10:
         return .00001 # can't be 0 bc that could cause division by 0 later on
 
-    # fitness function, tries to minimize velocity while maximizing time spent before crashing back down to planet, uses normalized quantities
-    velocity_magnitude = pe.distance(initial_velocity, [0, 0])
-
-    norm_runtime = (runtime - tick_length * 10) / (time_limit - tick_length * 10)
-    norm_velocity = velocity_magnitude / 10
-
-    return (norm_runtime - norm_velocity) ** 2
+    return runtime ** 2
 
 start_time = time() # just a timer
 top = True # boolean for whether rocket is moving right along top of planet or left along bottom of planet with each generation, switches halfway through
 start_x = -10 # initial x-coordinate of rocket, will be incremented with each generation so that organisms adapted to all positions/launch angles
 
-gen_count = 3000 # for how many generations training will last
-mutate_chance = .75 # the odds of an organism being mutated on any given generation
+gen_count = 1000 # for how many generations training will last
+mutate_chance = .6 # the odds of an organism being mutated on any given generation
 full_mutate_chance = .4 # odds of an organism being replaced by a randomized organism instead of just being tweaked according to the normal distribution
-standard_deviations = [.1 for i in range(5)] # how much each gene is mutated by, follows normal distribution so
-gene_ranges = [(-3, 3) for i in range(5)]
-pop_size = 40 # number of organisms in the population
+standard_deviations = [.1 for i in range(1)] # how much each gene is mutated by, follows normal distribution so
+gene_ranges = [(-3, 3) for i in range(1)]
+pop_size = 20 # number of organisms in the population
 
 time_limit = 40 # how long each fitness test will run for before just giving up
 tick_length = .2 # how often the physics engine will update, smaller values create more precise simulations but take longer
@@ -90,11 +79,11 @@ for generation in range(gen_count):
     # have the rocket move a little bit around the surface of the planet with each generation, first it goes right along the top of the planet (top=True),
     # then it goes left along the bottom of the planet (top=False).  It loops 10 times
     if top:
-        start_x += (10 * 4 * 2) / gen_count
+        start_x += (10 * 2 * 2) / gen_count
         if start_x >= 10:
             top = False
     else:
-        start_x -= (10 * 4 * 2) / gen_count
+        start_x -= (10 * 2 * 2) / gen_count
         if start_x <= -10:
             top = True
 

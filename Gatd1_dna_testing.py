@@ -5,7 +5,7 @@ import gene_functions
 g = gene_functions.Gatd1()
 
 velocity = [0, 0]
-dna = [1.0493179215779653, 0.26432598219944303]
+dna = [-2.4215988204335663, -1.0889519542788124]
 
 for j in range(2):
     velocity[j] = g.input0()[j] * dna[0] + \

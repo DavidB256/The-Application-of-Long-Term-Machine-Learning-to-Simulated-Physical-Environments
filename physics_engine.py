@@ -305,7 +305,9 @@ class Boundaries:
 # returns True if the end condition of the simulation has been reached, ending run_physics_engine()
 # needs to be replaced for each new algorithm used
 def termination(environ, tick_length):
-    if distance([0, 0], environ.solids[0].velocity) <= .01:
+    next_pos = [environ.solids[1].pos[0] + (environ.solids[1].velocity[0] * tick_length), environ.solids[1].pos[1] + (environ.solids[1].velocity[1] * tick_length)]
+
+    if distance([0, 0], next_pos) <= 11:
         return True
     return False
 
@@ -384,5 +386,5 @@ def run_physics_engine(tick_length, environ, time_limit):
                             solid2.velocity[j] *= solid1.bounce ** .5
 
     # change return statement based on what is needed for the current algorithm's fitness function
-    # return runtime
-    return environ.solids[0].pos
+    return runtime
+    # return environ.solids[0].pos

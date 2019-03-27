@@ -11,7 +11,7 @@ class Environment:
         self.g_strength = g_strength
 
 # GA_TD_1 (move a ball in a box with downward friction from a corner to the center using 2 simple gene functions
-e10 = Environment(solids=[pe.Circle(pos=[-100, -100], velocity=[10.493179215779653, 2.6432598219944303]),
+e10 = Environment(solids=[pe.Circle(pos=[-100, -100], velocity=[13.960157919747254, -24.94867648768312]),
                           pe.Rect(static=True, pos=[-155, 0], height=300),
                           pe.Rect(static=True, pos=[155, 0], height=300),
                           pe.Rect(static=True, pos=[0, -155], width=300),
