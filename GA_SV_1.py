@@ -4,42 +4,44 @@ from time import time
 from environments import Environment
 from genetic_algorithm import *
 
-def get_fitness(dna):
+def get_fitness(dna, destination):
     # create unique object of gene function class for each iteration
-    g = gene_functions.Gatd1()
+    g = gene_functions.Gasv1(e.g_strength[1], destination)
 
     # make sure to reset pos before starting again!!!!!!!!!!
-    e.solids[0].pos = [-100, -100]
+    e.solids[0].pos = [-100, .001]
 
     # set velocity based on input functions and weights from DNA
     for i in range(2):
         e.solids[0].velocity[i] = g.input0()[i] * dna[0] + \
-                                  g.input1()[i] * dna[1]
+                                  g.input1()[i] * dna[1] + \
+                                  g.input2()[i] * dna[2] + \
+                                  g.input3()[i] * dna[3]
+
+        if abs(e.solids[0].velocity[i]) >= 100:
+            return 10 ** -10
 
     end_pos = pe.run_physics_engine(tick_length, e, time_limit)
 
-    return 1 / pe.distance([0, 0], end_pos)
+    return 1 / (pe.distance(destination, end_pos) ** 2)
+
 
 start_time = time()  # just a timer
 
-gen_count = 500 # for how many generations training will last
-mutate_chance = .5 # the odds of an organism being mutated on any given generation
+gen_count = 10000 # for how many generations training will last
+mutate_chance = .55 # the odds of an organism being mutated on any given generation
 full_mutate_chance = .3 # odds of an organism being replaced by a randomized organism instead of just being tweaked according to the normal distribution
-standard_deviations = [.1 for i in range(2)] # how much each gene is mutated by, follows normal distribution so
-gene_ranges = [(-3, 3) for i in range(2)]
-pop_size = 10 # number of organisms in the population
+standard_deviations = [.05 for i in range(4)] # how much each gene is mutated by, follows normal distribution so
+gene_ranges = [(-5, 5) for i in range(4)] # bounds for initial gene values
+pop_size = 20 # number of organisms in the population
 
-time_limit = 10 ** 10 # how long each fitness test will run for before just giving up
+time_limit = 10 ** 3 # how long each fitness test will run for before just giving up
 tick_length = .2 # how often the physics engine will update, smaller values create more precise simulations but take longer
 
-e = Environment(solids=[pe.Circle(pos=[-100, -100]),
-                        pe.Rect(static=True, pos=[-155, 0], height=300),
-                        pe.Rect(static=True, pos=[155, 0], height=300),
-                        pe.Rect(static=True, pos=[0, -155], width=300),
-                        pe.Rect(static=True, pos=[0, 155], width=300)],
-                g_type='downward',
-                g_strength=.2)
 
+e = Environment(solids=[pe.Circle(pos=[-100, .001])],
+                g_type='uniform',
+                g_strength=[0, -9.81])
 
 # initialize population with random genes
 initial_population = []
@@ -58,9 +60,11 @@ for generation in range(gen_count):
     if (generation * 100) / gen_count % 1 == 0:
         print((generation * 100) / gen_count)
 
+    destination = [100, 0]
+
     # calculate fitness of each organism
     for org in p.organisms:
-        org.fitness = get_fitness(org.dna)
+        org.fitness = get_fitness(org.dna, destination)
 
     # do natural selection and reproduction
     p.natural_selection()
@@ -72,7 +76,7 @@ for generation in range(gen_count):
 
 # print results at end
 for org in p.organisms:
-    org.fitness = get_fitness(org.dna)
+    org.fitness = get_fitness(org.dna, destination)
     print(org.fitness, org.dna)
 
 print('time elapsed:', time() - start_time)
@@ -82,6 +86,7 @@ print('time elapsed:', time() - start_time)
 # it is kept here to save it, because the copy of it in physics_engine.py has to be changed for each distinct algorithm used
 
 # def termination(environ, tick_length):
-#     if distance([0, 0], environ.solids[0].velocity) == 0:
+#     if environ.solids[0].pos[1] <= 0:
 #         return True
 #     return False
+

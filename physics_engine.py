@@ -304,10 +304,10 @@ class Boundaries:
 
 # returns True if the end condition of the simulation has been reached, ending run_physics_engine()
 # needs to be replaced for each new algorithm used
-def termination(environ, tick_length):
-    next_pos = [environ.solids[1].pos[0] + (environ.solids[1].velocity[0] * tick_length), environ.solids[1].pos[1] + (environ.solids[1].velocity[1] * tick_length)]
 
-    if distance([0, 0], next_pos) <= 11:
+def termination(environ, tick_length):
+    # print(environ.solids[0].pos)
+    if environ.solids[0].pos[1] <= 0:
         return True
     return False
 
@@ -367,24 +367,25 @@ def run_physics_engine(tick_length, environ, time_limit):
             # update info of each solid
             solid.update(tick_length)
 
-            # detect and resolve collisions
-            for i, solid1 in enumerate(environ.solids[:-1]):
-                for solid2 in environ.solids[i + 1:]:
-                    ct = solid1.collision_type(solid2) # ct stands for collision type
-                    # nc means "not colliding"
-                    if ct != 'nc':
-                        # resolve the collision
-                        resolve_collision(solid1, solid2, ct)
+        # detect and resolve collisions
+        for i, solid1 in enumerate(environ.solids[:-1]):
+            for solid2 in environ.solids[i + 1:]:
+                ct = solid1.collision_type(solid2) # ct stands for collision type
+                # nc means "not colliding"
+                if ct != 'nc':
+                    # resolve the collision
+                    resolve_collision(solid1, solid2, ct)
 
-                        # have a solid bounce back away from its collider to prevent one object just sinking into another
-                        solid1.update(tick_length)
-                        solid2.update(tick_length)
+                    # have a solid bounce back away from its collider to prevent one object just sinking into another
+                    solid1.update(tick_length)
+                    solid2.update(tick_length)
 
-                        # account for loss of kinetic energy due to collision: v^2' = v^2 * bounce --> v' = v * sqrt(bounce)
-                        for j in range(2):
-                            solid1.velocity[j] *= solid2.bounce ** .5
-                            solid2.velocity[j] *= solid1.bounce ** .5
+                    # account for loss of kinetic energy due to collision: v^2' = v^2 * bounce --> v' = v * sqrt(bounce)
+                    for j in range(2):
+                        solid1.velocity[j] *= solid2.bounce ** .5
+                        solid2.velocity[j] *= solid1.bounce ** .5
 
     # change return statement based on what is needed for the current algorithm's fitness function
-    return runtime
-    # return environ.solids[0].pos
+    # return runtime
+    # print('velocity', environ.solids[0].velocity)
+    return environ.solids[0].pos

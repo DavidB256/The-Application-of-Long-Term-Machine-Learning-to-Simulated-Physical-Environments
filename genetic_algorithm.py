@@ -82,7 +82,6 @@ class Population:
     def reproduce(self, method):
         # refill population by breeding 50 sets of parents, chosen randomly but with their odds of being chosen proportional to their fitness
         if method == 'weighted breeding':
-            # not yet coded, idk if I ever will
             pass
 
         # refill population by breeding 50 sets of parents, chosen randomly

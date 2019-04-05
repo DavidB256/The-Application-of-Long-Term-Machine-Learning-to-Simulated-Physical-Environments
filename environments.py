@@ -10,7 +10,22 @@ class Environment:
         self.g_type = g_type
         self.g_strength = g_strength
 
-# GA_TD_1 (move a ball in a box with downward friction from a corner to the center using 2 simple gene functions
+# GA_SV_1 (parabolic trajectory to destination)
+e12 = Environment(solids=[pe.Circle(pos=[-100, .001], velocity=[1.0247667409276906, 3.266366292446037])],
+                g_type='uniform',
+                g_strength=[0, -9.81])
+
+# GA_TD_2 (GA_TD_1, but with a random destination point in the upper half of the box and a randomly-placed barrier in the middle)
+e11 = Environment(solids=[pe.Circle(pos=[-100, -100], velocity=[0, 0]),
+                          pe.Rect(pos=[56, 0], width=100, static=True),
+                          pe.Rect(static=True, pos=[-155, 0], height=300),
+                          pe.Rect(static=True, pos=[155, 0], height=300),
+                          pe.Rect(static=True, pos=[0, -155], width=300),
+                          pe.Rect(static=True, pos=[0, 155], width=300)],
+                  g_type='downward',
+                  g_strength=.2)
+
+# GA_TD_1 (move a ball in a box with downward friction from a corner to the center using 2 simple gene functions)
 e10 = Environment(solids=[pe.Circle(pos=[-100, -100], velocity=[13.960157919747254, -24.94867648768312]),
                           pe.Rect(static=True, pos=[-155, 0], height=300),
                           pe.Rect(static=True, pos=[155, 0], height=300),

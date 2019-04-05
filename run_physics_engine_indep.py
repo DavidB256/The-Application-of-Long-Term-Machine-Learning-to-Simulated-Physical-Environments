@@ -7,14 +7,14 @@ start_time = time()
 f = open('output.txt', 'w') # choose doc to write into
 
 # physics settings
-length = 20 # duration for which the simulation will run, in seconds
-tick_length = .2 # length of one tick, in seconds
-e = e10 # choose saved environment
+length = 50 # duration for which the simulation will run, in seconds
+tick_length = .1 # length of one tick, in seconds
+e = e7 # choose saved environment
 
 # config settings
 display = True # make true to run graphics engine immediately after
-capture = False # make true for the graphics engine to screenshot every frame
-save_loc = r'C:\Users\David\Desktop\physics simulations\frames\\' # location of folder where captured screenshots will be saved
+capture = True # make true for the graphics engine to screenshot every frame
+save_loc = r'C:\Users\David\Desktop\physics simulations\misc\side-view bounce\\' # location of folder where captured screenshots will be saved
 sleep_time = 0 # how long the graphics engine will wait between frames, can be very low or 0 because taking screenshots every frame already slows things down a ton
 
 # iterate through time, one tick at a time
@@ -66,23 +66,23 @@ for tick in range(int(length / tick_length)):
         solid.write(f, tick)
         solid.update(tick_length)
 
-        # detect and resolve collisions
-        for i, solid1 in enumerate(e.solids[:-1]):
-            for solid2 in e.solids[i + 1:]:
-                ct = solid1.collision_type(solid2)
-                # nc means "not colliding"
-                if ct != 'nc':
-                    # resolve the collision
-                    pe.resolve_collision(solid1, solid2, ct)
+    # detect and resolve collisions
+    for i, solid1 in enumerate(e.solids[:-1]):
+        for solid2 in e.solids[i + 1:]:
+            ct = solid1.collision_type(solid2)
+            # nc means "not colliding"
+            if ct != 'nc':
+                # resolve the collision
+                pe.resolve_collision(solid1, solid2, ct)
 
-                    # have a solid bounce back away from its collider to prevent one object just sinking into another
-                    solid1.update(tick_length)
-                    solid2.update(tick_length)
+                # have a solid bounce back away from its collider to prevent one object just sinking into another
+                solid1.update(tick_length)
+                solid2.update(tick_length)
 
-                    #account for loss of kinetic energy due to collision: v^2' = v^2 * bounce --> v' = v * sqrt(bounce)
-                    for j in range(2):
-                        solid1.velocity[j] *= solid2.bounce ** .5
-                        solid2.velocity[j] *= solid1.bounce ** .5
+                #account for loss of kinetic energy due to collision: v^2' = v^2 * bounce --> v' = v * sqrt(bounce)
+                for j in range(2):
+                    solid1.velocity[j] *= solid2.bounce ** .5
+                    solid2.velocity[j] *= solid1.bounce ** .5
 
 
 print('time elapsed:', time() - start_time)
