@@ -1,4 +1,26 @@
-import physics_engine as pe
+# gene functions for the FINAL AI (Long-Term Machine Learning), used to create cost function for unsupervised learning NN
+# receives 4 inputs, uses ratios between them to analyze the type of data received, used twice to get 2 weights
+# for each value of error vector
+class Ltml:
+    def __init__(self, inputs):
+        self.a = inputs[0]
+        self.b = inputs[1]
+        self.c = inputs[2]
+        self.d = inputs[3]
+
+    def x0(self):
+        return self.a / self.b
+    def x1(self):
+        return self.a / self.c
+    def x2(self):
+        return self.a / self.d
+    def x3(self):
+        return self.b / self.c
+    def x4(self):
+        return self.b / self.d
+    def x5(self):
+        return self.c / self.d
+
 
 # gene functions for GA_PS_2, uses starting position of rocket
 class Gaps2:

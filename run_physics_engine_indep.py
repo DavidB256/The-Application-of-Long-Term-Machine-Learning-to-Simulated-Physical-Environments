@@ -9,12 +9,12 @@ f = open('output.txt', 'w') # choose doc to write into
 # physics settings
 length = 50 # duration for which the simulation will run, in seconds
 tick_length = .1 # length of one tick, in seconds
-e = e7 # choose saved environment
+e = e15 # choose saved environment
 
 # config settings
 display = True # make true to run graphics engine immediately after
-capture = True # make true for the graphics engine to screenshot every frame
-save_loc = r'C:\Users\David\Desktop\physics simulations\misc\side-view bounce\\' # location of folder where captured screenshots will be saved
+capture = False # make true for the graphics engine to screenshot every frame
+save_loc = r'C:\Users\David\Desktop\physics simulations\NN_PS_1\\' # location of folder where captured screenshots will be saved
 sleep_time = 0 # how long the graphics engine will wait between frames, can be very low or 0 because taking screenshots every frame already slows things down a ton
 
 # iterate through time, one tick at a time

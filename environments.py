@@ -10,8 +10,30 @@ class Environment:
         self.g_type = g_type
         self.g_strength = g_strength
 
+# ball through gap in wall
+e15 = Environment(solids=[pe.Circle(),
+                           pe.Rect(static=True, pos=[100, -450], height=1000),
+                           pe.Rect(static=True, pos=[100, 600], height=1000)],
+                   g_type='uniform',
+                   g_strength=[0, -9.81])
+
+# NN_PS_1, but without the moon to slingshot off of
+e14 = Environment(solids=[pe.Circle(pos=[-100, 0], static=True, mass=100),
+                          pe.Circle(pos=[0, 0], velocity=[3.3, 3.78], mass=1, radius=1)],
+                  g_type='nonuniform',
+                  g_strength=10)
+
+# NN_PS_1, maximize velocity from gravity assist
+e13 = Environment(solids=[pe.Circle(pos=[-100, 0], static=True, mass=100),
+                          pe.Circle(pos=[0, 0], velocity=[3.3, 3.78], mass=1, radius=1),
+                          pe.Circle(pos=[50, 0], velocity=[0, 2.582], mass=20)],
+                 g_type='nonuniform',
+                 g_strength=10)
+
 # GA_SV_1 (parabolic trajectory to destination)
-e12 = Environment(solids=[pe.Circle(pos=[-100, .001], velocity=[1.0247667409276906, 3.266366292446037])],
+e12 = Environment(solids=[pe.Circle(pos=[-100, .001], velocity=[11.24, 81.97]),
+                          pe.Rect(static=True, pos=[100, 200]),
+                          pe.Rect(static=True, pos=[200, 0])],
                 g_type='uniform',
                 g_strength=[0, -9.81])
 

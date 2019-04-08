@@ -304,20 +304,35 @@ class Boundaries:
 
 # returns True if the end condition of the simulation has been reached, ending run_physics_engine()
 # needs to be replaced for each new algorithm used
+# this mega-composite termination function currently sitting here is for running the LT ML algorithm
 
-def termination(environ, tick_length):
-    # print(environ.solids[0].pos)
-    if environ.solids[0].pos[1] <= 0:
-        return True
+def termination(environ, tick_length, e_type, destination=None, wall_x=None):
+    if e_type == 'PS_1':
+        next_pos = [environ.solids[1].pos[0] + (environ.solids[1].velocity[0] * tick_length),
+                    environ.solids[1].pos[1] + (environ.solids[1].velocity[1] * tick_length)]
+        if distance([0, 0], next_pos) <= 11:
+            return True
+    elif e_type == 'PS_2':
+        pass
+    elif e_type == 'TD_1' or e_type == 'TD_2':
+        if distance([0, 0], environ.solids[0].velocity) == 0:
+            return True
+    elif e_type == 'SV_1':
+        if environ.solids[0].pos[1] <= destination[0] and environ.solids[0].pos[0] >= destination[1]:
+            return True
+    elif e_type == 'SV_2':
+        if environ.solids[0].pos[0] >= wall_x + 5:
+            return True
+
     return False
 
 # used for running the physics engine from another file, like one for an AI algorithm, this code is almost identical to that of run_physics_engine_indep.py
-def run_physics_engine(tick_length, environ, time_limit):
+def run_physics_engine(tick_length, environ, time_limit, e_type=None, destination=None, wall_x=None):
     runtime = 0
 
     # iterate through time, one tick at a time
     while runtime <= time_limit:
-        if termination(environ, tick_length):
+        if termination(environ, tick_length, e_type, destination, wall_x):
             break
 
         runtime += tick_length
@@ -386,6 +401,11 @@ def run_physics_engine(tick_length, environ, time_limit):
                         solid2.velocity[j] *= solid1.bounce ** .5
 
     # change return statement based on what is needed for the current algorithm's fitness function
-    # return runtime
-    # print('velocity', environ.solids[0].velocity)
-    return environ.solids[0].pos
+    # this composite conditional return setup currently sitting here is for running the LT ML algorithm
+
+    if e_type == 'PS_1':
+        return runtime
+    elif e_type == 'PS_2':
+        return environ.solids[1].velocity
+    elif e_type == 'TD_1' or e_type == 'TD_2' or e_type == 'SV_1' or e_type == 'SV_2':
+        return environ.solids[0].pos
